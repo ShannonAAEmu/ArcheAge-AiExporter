@@ -41,7 +41,7 @@ public class AreasMission {
         } else if (name.contains("AINavigationModifier")) {
             this.type = "AINavigationModifier";
             this.layer = "ai_nav";
-        } else if (name.contains("AIPath") || name.contains("aipath")) {
+        } else if (name.contains("AIPath") || name.contains("aipath") || name.contains("path")) {
             this.type = "AIPath";
             this.layer = "ai_path";
         } else {
