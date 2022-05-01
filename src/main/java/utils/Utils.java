@@ -32,13 +32,8 @@ public class Utils {
     }
 
     public static int convertHexToInt(byte[] bytes) {
-        byte[] reversedBytes = new byte[4];
-        reversedBytes[0] = bytes[0];
-        reversedBytes[1] = bytes[1];
-        reversedBytes[2] = bytes[2];
-        reversedBytes[3] = bytes[3];
-        reversedBytes = reverseBytesArray(reversedBytes);
-        for (byte b : reversedBytes) {
+        bytes = reverseBytesArray(bytes);
+        for (byte b : bytes) {
             sb.append(String.format("%02x", b));
         }
         String idxStr = sb.toString();
