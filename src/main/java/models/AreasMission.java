@@ -1,6 +1,7 @@
 package models;
 
 import com.google.gson.annotations.Expose;
+import org.apache.commons.lang3.math.NumberUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +13,7 @@ public class AreasMission {
     private String type;
 
     @Expose()
-    private String layer = "Unknown";
+    private String layer;
 
     @Expose()
     private String name;
@@ -35,17 +36,23 @@ public class AreasMission {
     }
 
     public void setType(String name) {
-        if (name.contains("ForbiddenArea")) {
+        if (name.contains("ForbiddenArea") || NumberUtils.isDigits(name)) {
             this.type = "ForbiddenArea";
             this.layer = "forbidden_area";
+        } else if (name.contains("ForbiddenBoundary")) {
+            this.type = "ForbiddenBoundary";
+            this.layer = "forbidden_boundary";
         } else if (name.contains("AINavigationModifier")) {
             this.type = "AINavigationModifier";
             this.layer = "ai_nav";
-        } else if (name.contains("AIPath") || name.contains("aipath") || name.contains("path")) {
+        } else if (name.contains("AIPath") || name.contains("aipath") || name.contains("path") ||
+                name.contains("move") || name.contains("run") || name.contains("walk")) {
             this.type = "AIPath";
             this.layer = "ai_path";
         } else {
-            this.type = "UNKNOWN_TYPE: " + name;
+            System.out.println("UNKNOWN_TYPE: " + name);
+            this.type = "AIPath";
+            this.layer = "ai_path";
         }
     }
 

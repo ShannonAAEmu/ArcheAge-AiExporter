@@ -12,13 +12,13 @@ import java.text.NumberFormat;
 
 public class Utils {
 
-    private static final NumberFormat numberFormat;
-    private static final StringBuilder sb;
+    private static final NumberFormat NUMBER_FORMAT;
+    private static final StringBuilder SB;
 
     static {
-        numberFormat = NumberFormat.getInstance();
-        numberFormat.setGroupingUsed(false);
-        sb = new StringBuilder();
+        NUMBER_FORMAT = NumberFormat.getInstance();
+        NUMBER_FORMAT.setGroupingUsed(false);
+        SB = new StringBuilder();
     }
 
     public static byte[] reverseBytesArray(byte[] bytes) {
@@ -34,10 +34,10 @@ public class Utils {
     public static int convertHexToInt(byte[] bytes) {
         bytes = reverseBytesArray(bytes);
         for (byte b : bytes) {
-            sb.append(String.format("%02x", b));
+            SB.append(String.format("%02x", b));
         }
-        String idxStr = sb.toString();
-        clearSB(sb);
+        String idxStr = SB.toString();
+        clearSB(SB);
         if ("ffffffff".equals(idxStr)) {
             return 0;
         }
@@ -46,10 +46,10 @@ public class Utils {
 
     public static double convertHexToDouble(byte[] bytes) {
         long hexInLong = convertHexToLong(bytes);
-        clearSB(sb);
-        numberFormat.setMinimumFractionDigits(2);
+        clearSB(SB);
+        NUMBER_FORMAT.setMinimumFractionDigits(2);
         Float f = Float.intBitsToFloat(((int) hexInLong));
-        String strFloat = numberFormat.format(f);
+        String strFloat = NUMBER_FORMAT.format(f);
         String convertFloat = String.format("%.2f", Double.valueOf(strFloat));
         return Double.parseDouble(convertFloat);
     }
@@ -57,10 +57,10 @@ public class Utils {
     private static Long convertHexToLong(byte[] bytes) {
         byte[] bytesMass = reverseBytesArray(bytes);
         for (byte b : bytesMass) {
-            sb.append(String.format("%02x", b));
+            SB.append(String.format("%02x", b));
         }
-        Long parseLong = Long.parseLong(sb.toString(), 16);
-        clearSB(sb);
+        Long parseLong = Long.parseLong(SB.toString(), 16);
+        clearSB(SB);
         return parseLong;
     }
 
