@@ -1,8 +1,11 @@
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.math.NumberUtils;
+import reader.BaiReader;
+import reader.impl.VertsMissionReaderImpl;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 public class Main {
@@ -13,6 +16,11 @@ public class Main {
     public static void main(String[] args) {
         serverBaiHashMap = new HashMap<>();
         checkFolders();
+        try {
+            loadServerGeoData();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private static void checkFolders() {
@@ -47,4 +55,15 @@ public class Main {
         }
     }
 
+    private static void loadServerGeoData() {
+        BaiReader baiReader = null;
+        for (Map.Entry<File, String> map : serverBaiHashMap.entrySet()) {
+            if ("vertsmission0.bai".equals(map.getKey().getName())) {
+                baiReader = new VertsMissionReaderImpl(map.getKey(), Integer.parseInt(map.getValue()), ROOT_FOLDER);
+                baiReader.read();
+                baiReader.print();
+                baiReader.close();
+            }
+        }
+    }
 }
