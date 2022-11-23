@@ -15,4 +15,6 @@ public interface BaiReader {
     void print();
 
     void save();
+
+    void readLinkDescriptors(int size) throws IOException;
 }

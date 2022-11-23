@@ -1,19 +1,22 @@
 package reader.impl;
 
-import entities.BaiFile;
-import entities.impl.ObstacleDataDescriptor;
-import models.Vector;
+import descriptors.Descriptor;
+import descriptors.impl.ObstacleDataDescriptor;
+import entities.Vector;
 import reader.BaiReader;
 import reader.ReaderUtil;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.List;
 
-public class VertexMissionReaderImpl implements BaiReader, Closeable {
+public class VertexMissionReaderImpl implements BaiReader {
     private static final int BAI_VERTEX_FILE_VERSION = 2;
     private final File rawBaiFile;
-    private final List<BaiFile> obstacleDataDescList;
+    private final List<Descriptor> obstacleDataDescList;
     private final int zoneId;
     private ReaderUtil readerUtil;
 
@@ -67,6 +70,10 @@ public class VertexMissionReaderImpl implements BaiReader, Closeable {
     @Override
     public void save() {
 
+    }
+
+    @Override
+    public void readLinkDescriptors(int size) {
     }
 
     private void initReaderUtil() throws FileNotFoundException {

@@ -1,14 +1,14 @@
-package entities.impl;
+package descriptors.impl;
 
-import entities.BaiFile;
-import models.Vector;
+import descriptors.Descriptor;
+import entities.Bbox;
+import entities.Vector;
 
 import java.util.Objects;
 
-public class NodeDescriptor implements BaiFile {
+public class NodeDescriptor implements Descriptor {
 
-    private final Vector triangularBBoxMin;
-    private final Vector triangularBBoxMax;
+    private final Bbox triangularBBox;
     private int zoneId;
     private int id;
     private Vector dir;
@@ -23,17 +23,12 @@ public class NodeDescriptor implements BaiFile {
     private byte unk1;
     private byte unk2;
 
-    public NodeDescriptor(Vector triangularBBoxMin, Vector triangularBBoxMax) {
-        this.triangularBBoxMin = triangularBBoxMin;
-        this.triangularBBoxMax = triangularBBoxMax;
+    public NodeDescriptor(Bbox triangularBBox) {
+        this.triangularBBox = triangularBBox;
     }
 
-    public Vector getTriangularBBoxMin() {
-        return triangularBBoxMin;
-    }
-
-    public Vector getTriangularBBoxMax() {
-        return triangularBBoxMax;
+    public Bbox getTriangularBBox() {
+        return triangularBBox;
     }
 
     public int getZoneId() {
@@ -145,19 +140,18 @@ public class NodeDescriptor implements BaiFile {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         NodeDescriptor that = (NodeDescriptor) o;
-        return zoneId == that.zoneId && id == that.id && index == that.index && obstacle1 == that.obstacle1 && obstacle2 == that.obstacle2 && obstacle3 == that.obstacle3 && forbidden == that.forbidden && unk1 == that.unk1 && unk2 == that.unk2 && Objects.equals(triangularBBoxMin, that.triangularBBoxMin) && Objects.equals(triangularBBoxMax, that.triangularBBoxMax) && Objects.equals(dir, that.dir) && Objects.equals(up, that.up) && Objects.equals(pos, that.pos) && type == that.type;
+        return zoneId == that.zoneId && id == that.id && index == that.index && obstacle1 == that.obstacle1 && obstacle2 == that.obstacle2 && obstacle3 == that.obstacle3 && forbidden == that.forbidden && unk1 == that.unk1 && unk2 == that.unk2 && Objects.equals(triangularBBox, that.triangularBBox) && Objects.equals(dir, that.dir) && Objects.equals(up, that.up) && Objects.equals(pos, that.pos) && type == that.type;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(triangularBBoxMin, triangularBBoxMax, zoneId, id, dir, up, pos, index, obstacle1, obstacle2, obstacle3, type, forbidden, unk1, unk2);
+        return Objects.hash(triangularBBox, zoneId, id, dir, up, pos, index, obstacle1, obstacle2, obstacle3, type, forbidden, unk1, unk2);
     }
 
     @Override
     public String toString() {
         return "NodeDescriptor{" +
-                "triangularBBoxMin=" + triangularBBoxMin +
-                ", triangularBBoxMax=" + triangularBBoxMax +
+                "triangularBBox=" + triangularBBox +
                 ", zoneId=" + zoneId +
                 ", id=" + id +
                 ", dir=" + dir +

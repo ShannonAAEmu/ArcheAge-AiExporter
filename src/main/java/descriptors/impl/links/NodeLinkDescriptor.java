@@ -1,11 +1,11 @@
-package entities.impl;
+package descriptors.impl.links;
 
-import entities.BaiFile;
-import models.Vector;
+import descriptors.Descriptor;
+import entities.Vector;
 
 import java.util.Objects;
 
-public class LinkDescriptor implements BaiFile {
+public class NodeLinkDescriptor implements Descriptor {
 
     private int sourceNode;
     private int targetNode;
@@ -20,7 +20,7 @@ public class LinkDescriptor implements BaiFile {
     private byte isPureTriangularLink;      // Don't use in CryEngine source code
     private byte simplePassabilityCheck;
 
-    public LinkDescriptor() {
+    public NodeLinkDescriptor() {
     }
 
     public int getSourceNode() {
@@ -123,7 +123,7 @@ public class LinkDescriptor implements BaiFile {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        LinkDescriptor that = (LinkDescriptor) o;
+        NodeLinkDescriptor that = (NodeLinkDescriptor) o;
         return sourceNode == that.sourceNode && targetNode == that.targetNode && Double.compare(that.maxPassRadius, maxPassRadius) == 0 && Double.compare(that.exposure, exposure) == 0 && Double.compare(that.length, length) == 0 && Double.compare(that.maxWaterDepth, maxWaterDepth) == 0 && Double.compare(that.minWaterDepth, minWaterDepth) == 0 && startIndex == that.startIndex && endIndex == that.endIndex && isPureTriangularLink == that.isPureTriangularLink && simplePassabilityCheck == that.simplePassabilityCheck && Objects.equals(edgeCenter, that.edgeCenter);
     }
 
@@ -134,7 +134,7 @@ public class LinkDescriptor implements BaiFile {
 
     @Override
     public String toString() {
-        return "LinkDescriptor{" +
+        return "NodeLinkDescriptor{" +
                 "sourceNode=" + sourceNode +
                 ", targetNode=" + targetNode +
                 ", edgeCenter=" + edgeCenter +

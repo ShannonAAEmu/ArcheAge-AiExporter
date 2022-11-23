@@ -1,11 +1,11 @@
-package entities.impl;
+package descriptors.impl;
 
-import entities.BaiFile;
-import models.Vector;
+import descriptors.Descriptor;
+import entities.Vector;
 
 import java.util.Objects;
 
-public class ObstacleDataDescriptor implements BaiFile {
+public class ObstacleDataDescriptor implements Descriptor {
 
     private int zoneId;
     private Vector pos;

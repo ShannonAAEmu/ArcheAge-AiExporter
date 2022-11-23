@@ -1,9 +1,10 @@
 package reader.impl;
 
-import entities.BaiFile;
-import entities.impl.LinkDescriptor;
-import entities.impl.NodeDescriptor;
-import models.Vector;
+import descriptors.Descriptor;
+import descriptors.impl.NodeDescriptor;
+import descriptors.impl.links.NodeLinkDescriptor;
+import entities.Bbox;
+import entities.Vector;
 import reader.BaiReader;
 import reader.ReaderUtil;
 
@@ -15,21 +16,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class NetMissionReaderImpl implements BaiReader {
-
     private static final int BAI_TRI_FILE_VERSION = 55;
     private final File rawBaiFile;
-    private final List<BaiFile> nodeDescriptorList;
-    private final List<BaiFile> linkDescriptorList;
+    private final List<Descriptor> nodeDescriptorList;
+    private final List<Descriptor> nodeLinkDescriptorList;
     private final int zoneId;
     private ReaderUtil readerUtil;
-    private Vector triangularBBoxMin;
-    private Vector triangularBBoxMax;
+    private Bbox triangularBBox;
 
     public NetMissionReaderImpl(File rawBaiFile, int zoneId) {
         this.rawBaiFile = rawBaiFile;
         this.zoneId = zoneId;
         this.nodeDescriptorList = new ArrayList<>();
-        this.linkDescriptorList = new ArrayList<>();
+        this.nodeLinkDescriptorList = new ArrayList<>();
     }
 
     @Override
@@ -38,7 +37,7 @@ public class NetMissionReaderImpl implements BaiReader {
             initReaderUtil();
             int version = readFileVersion();
             checkVersion(version);
-            setBBox();
+            initTriangularBBox();
             int descriptorsSize = readDescriptorsSize();
             if (isValidDescriptor(descriptorsSize)) {
                 readNodeDescriptors(descriptorsSize);
@@ -76,7 +75,7 @@ public class NetMissionReaderImpl implements BaiReader {
     @Override
     public void print() {
         System.out.println(nodeDescriptorList);
-        System.out.println(linkDescriptorList);
+        System.out.println(nodeLinkDescriptorList);
     }
 
     @Override
@@ -88,9 +87,10 @@ public class NetMissionReaderImpl implements BaiReader {
         readerUtil = new ReaderUtil(new RandomAccessFile(rawBaiFile, "r"));
     }
 
-    private void setBBox() throws IOException {
-        triangularBBoxMin = readTriangularBBox("triangularBBoxMin");
-        triangularBBoxMax = readTriangularBBox("triangularBBoxMax");
+    private void initTriangularBBox() throws IOException {
+        triangularBBox = new Bbox();
+        triangularBBox.setTriangularBBoxMin(readTriangularBBox("triangularBBoxMin"));
+        triangularBBox.setTriangularBBoxMax(readTriangularBBox("triangularBBoxMax"));
     }
 
     private Vector readTriangularBBox(String name) throws IOException {
@@ -109,7 +109,7 @@ public class NetMissionReaderImpl implements BaiReader {
         NodeDescriptor nodeDescriptor;
         NodeDescriptor.EWaypointNodeType[] eWaypointNodeTypes = NodeDescriptor.EWaypointNodeType.values();
         for (int i = 0; i < size; i++) {
-            nodeDescriptor = new NodeDescriptor(triangularBBoxMin, triangularBBoxMax);
+            nodeDescriptor = new NodeDescriptor(triangularBBox);
             nodeDescriptor.setZoneId(zoneId);
             nodeDescriptor.setId(readerUtil.readInt());
             nodeDescriptor.setDir(readCoords("dir"));
@@ -127,23 +127,24 @@ public class NetMissionReaderImpl implements BaiReader {
         }
     }
 
-    private void readLinkDescriptors(int size) throws IOException {
-        LinkDescriptor linkDescriptor;
+    @Override
+    public void readLinkDescriptors(int size) throws IOException {
+        NodeLinkDescriptor nodeLinkDescriptor;
         for (int i = 0; i < size; i++) {
-            linkDescriptor = new LinkDescriptor();
-            linkDescriptor.setSourceNode(readerUtil.readInt());
-            linkDescriptor.setTargetNode(readerUtil.readInt());
-            linkDescriptor.setEdgeCenter(readCoords("edgeCenter"));
-            linkDescriptor.setMaxPassRadius(readerUtil.readDouble());
-            linkDescriptor.setExposure(readerUtil.readDouble());
-            linkDescriptor.setLength(readerUtil.readDouble());
-            linkDescriptor.setMaxWaterDepth(readerUtil.readDouble());
-            linkDescriptor.setMinWaterDepth(readerUtil.readDouble());
-            linkDescriptor.setStartIndex(readerUtil.readByte());
-            linkDescriptor.setEndIndex(readerUtil.readByte());
-            linkDescriptor.setIsPureTriangularLink(readerUtil.readByte());
-            linkDescriptor.setSimplePassabilityCheck(readerUtil.readByte());
-            linkDescriptorList.add(linkDescriptor);
+            nodeLinkDescriptor = new NodeLinkDescriptor();
+            nodeLinkDescriptor.setSourceNode(readerUtil.readInt());
+            nodeLinkDescriptor.setTargetNode(readerUtil.readInt());
+            nodeLinkDescriptor.setEdgeCenter(readCoords("edgeCenter"));
+            nodeLinkDescriptor.setMaxPassRadius(readerUtil.readDouble());
+            nodeLinkDescriptor.setExposure(readerUtil.readDouble());
+            nodeLinkDescriptor.setLength(readerUtil.readDouble());
+            nodeLinkDescriptor.setMaxWaterDepth(readerUtil.readDouble());
+            nodeLinkDescriptor.setMinWaterDepth(readerUtil.readDouble());
+            nodeLinkDescriptor.setStartIndex(readerUtil.readByte());
+            nodeLinkDescriptor.setEndIndex(readerUtil.readByte());
+            nodeLinkDescriptor.setIsPureTriangularLink(readerUtil.readByte());
+            nodeLinkDescriptor.setSimplePassabilityCheck(readerUtil.readByte());
+            nodeLinkDescriptorList.add(nodeLinkDescriptor);
         }
     }
 
