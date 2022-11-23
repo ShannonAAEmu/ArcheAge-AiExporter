@@ -3,15 +3,21 @@ package models;
 import java.util.Objects;
 
 public class Vector {
-
+    private String name;
     private double x;
     private double y;
     private double z;
 
-    public Vector(double x, double y, double z) {
-        this.x = x;
-        this.y = y;
-        this.z = z;
+    public Vector(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public double getX() {
@@ -43,18 +49,19 @@ public class Vector {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Vector vector = (Vector) o;
-        return Double.compare(vector.x, x) == 0 && Double.compare(vector.y, y) == 0 && Double.compare(vector.z, z) == 0;
+        return Double.compare(vector.x, x) == 0 && Double.compare(vector.y, y) == 0 && Double.compare(vector.z, z) == 0 && Objects.equals(name, vector.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(x, y, z);
+        return Objects.hash(name, x, y, z);
     }
 
     @Override
     public String toString() {
         return "Vector{" +
-                "x=" + x +
+                "name='" + name + '\'' +
+                ", x=" + x +
                 ", y=" + y +
                 ", z=" + z +
                 '}';

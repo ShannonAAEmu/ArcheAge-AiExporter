@@ -5,16 +5,16 @@ import models.Vector;
 
 import java.util.Objects;
 
-public class VertsMission implements BaiFile {
+public class ObstacleDataDescriptor implements BaiFile {
 
     private int zoneId;
     private Vector pos;
     private Vector dir;
-    private double approxRadius;
+    private double approxRadius;    // this radius is approximate - it is estimated during link generation. if -ve it means that it shouldn't be used (i.e. object is significantly non-circular)
     private byte flags;
     private byte approxHeight;
 
-    public VertsMission() {
+    public ObstacleDataDescriptor() {
     }
 
     public int getZoneId() {
@@ -69,7 +69,7 @@ public class VertsMission implements BaiFile {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        VertsMission that = (VertsMission) o;
+        ObstacleDataDescriptor that = (ObstacleDataDescriptor) o;
         return zoneId == that.zoneId && Double.compare(that.approxRadius, approxRadius) == 0 && flags == that.flags && approxHeight == that.approxHeight && Objects.equals(pos, that.pos) && Objects.equals(dir, that.dir);
     }
 
@@ -80,7 +80,7 @@ public class VertsMission implements BaiFile {
 
     @Override
     public String toString() {
-        return "VertsMission{" +
+        return "ObstacleDataDesc{" +
                 "zoneId=" + zoneId +
                 ", pos=" + pos +
                 ", dir=" + dir +

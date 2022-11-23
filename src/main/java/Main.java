@@ -1,7 +1,8 @@
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import reader.BaiReader;
-import reader.impl.VertsMissionReaderImpl;
+import reader.impl.NetMissionReaderImpl;
+import reader.impl.VertexMissionReaderImpl;
 
 import java.io.File;
 import java.util.HashMap;
@@ -56,12 +57,16 @@ public class Main {
     }
 
     private static void loadServerGeoData() {
-        BaiReader baiReader = null;
+        BaiReader baiReader;
         for (Map.Entry<File, String> map : serverBaiHashMap.entrySet()) {
             if ("vertsmission0.bai".equals(map.getKey().getName())) {
-                baiReader = new VertsMissionReaderImpl(map.getKey(), Integer.parseInt(map.getValue()), ROOT_FOLDER);
+                baiReader = new VertexMissionReaderImpl(map.getKey(), Integer.parseInt(map.getValue()));
                 baiReader.read();
-                baiReader.print();
+                baiReader.close();
+            }
+            if ("netmission0.bai".equals(map.getKey().getName())) {
+                baiReader = new NetMissionReaderImpl(map.getKey(), Integer.parseInt(map.getValue()));
+                baiReader.read();
                 baiReader.close();
             }
         }
