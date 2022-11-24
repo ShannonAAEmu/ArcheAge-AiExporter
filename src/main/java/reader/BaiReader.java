@@ -1,20 +1,23 @@
 package reader;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public interface BaiReader {
 
-    void read();
+    void initReaderUtil() throws FileNotFoundException;
 
-    int readFileVersion() throws IOException;
+    void readFile();
 
     void checkVersion(int version);
+
+    boolean isValidDescriptor(long count);
+
+    void readDescriptor(long size) throws IOException;
 
     void close();
 
     void print();
 
     void save();
-
-    void readLinkDescriptors(int size) throws IOException;
 }

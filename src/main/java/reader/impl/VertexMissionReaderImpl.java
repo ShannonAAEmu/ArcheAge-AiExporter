@@ -4,7 +4,7 @@ import descriptors.Descriptor;
 import descriptors.impl.ObstacleDataDescriptor;
 import entities.Vector;
 import reader.BaiReader;
-import reader.ReaderUtil;
+import utils.ReaderUtil;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -27,14 +27,19 @@ public class VertexMissionReaderImpl implements BaiReader {
     }
 
     @Override
-    public void read() {
+    public void initReaderUtil() throws FileNotFoundException {
+        readerUtil = new ReaderUtil(new RandomAccessFile(rawBaiFile, "r"));
+    }
+
+    @Override
+    public void readFile() {
         try {
             initReaderUtil();
-            int version = readFileVersion();
+            int version = readerUtil.readFileVersion();
             checkVersion(version);
-            int descriptorsSize = readDescriptorsSize();
-            if (isValidDescriptors(descriptorsSize)) {
-                readDescriptors(descriptorsSize);
+            long descriptorsSize = readerUtil.readDescriptorSize();
+            if (isValidDescriptor(descriptorsSize)) {
+                readDescriptor(descriptorsSize);
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -42,14 +47,30 @@ public class VertexMissionReaderImpl implements BaiReader {
     }
 
     @Override
-    public int readFileVersion() throws IOException {
-        return readerUtil.readInt();
-    }
-
-    @Override
     public void checkVersion(int version) {
         if (BAI_VERTEX_FILE_VERSION != version) {
             throw new RuntimeException("Wrong vertex list BAI file version - found " + version + " expected " + BAI_VERTEX_FILE_VERSION);
+        }
+    }
+
+    @Override
+    public boolean isValidDescriptor(long size) {
+        return 0 < size;
+    }
+
+    @Override
+    public void readDescriptor(long size) throws IOException {
+        ObstacleDataDescriptor obstacleDataDescriptor;
+        for (int i = 0; i < size; i++) {
+            obstacleDataDescriptor = new ObstacleDataDescriptor();
+            obstacleDataDescriptor.setZoneId(zoneId);
+            obstacleDataDescriptor.setPos(readCoords("pos"));
+            obstacleDataDescriptor.setDir(readCoords("dir"));
+            obstacleDataDescriptor.setApproxRadius(readerUtil.readDouble());
+            obstacleDataDescriptor.setFlags(readerUtil.readByte());
+            obstacleDataDescriptor.setApproxHeight(readerUtil.readByte());
+            readerUtil.readShortSeparator();
+            obstacleDataDescList.add(obstacleDataDescriptor);
         }
     }
 
@@ -69,34 +90,6 @@ public class VertexMissionReaderImpl implements BaiReader {
 
     @Override
     public void save() {
-
-    }
-
-    @Override
-    public void readLinkDescriptors(int size) {
-    }
-
-    private void initReaderUtil() throws FileNotFoundException {
-        readerUtil = new ReaderUtil(new RandomAccessFile(rawBaiFile, "r"));
-    }
-
-    private int readDescriptorsSize() throws IOException {
-        return readerUtil.readInt();
-    }
-
-    private void readDescriptors(int size) throws IOException {
-        ObstacleDataDescriptor obstacleDataDescriptor;
-        for (int i = 0; i < size; i++) {
-            obstacleDataDescriptor = new ObstacleDataDescriptor();
-            obstacleDataDescriptor.setZoneId(zoneId);
-            obstacleDataDescriptor.setPos(readCoords("pos"));
-            obstacleDataDescriptor.setDir(readCoords("dir"));
-            obstacleDataDescriptor.setApproxRadius(readerUtil.readDouble());
-            obstacleDataDescriptor.setFlags(readerUtil.readByte());
-            obstacleDataDescriptor.setApproxHeight(readerUtil.readByte());
-            readerUtil.readShortSeparator();
-            obstacleDataDescList.add(obstacleDataDescriptor);
-        }
     }
 
     private Vector readCoords(String name) throws IOException {
@@ -105,9 +98,5 @@ public class VertexMissionReaderImpl implements BaiReader {
         coordsVector.setY(readerUtil.readDouble());
         coordsVector.setZ(readerUtil.readDouble());
         return coordsVector;
-    }
-
-    private boolean isValidDescriptors(int size) {
-        return 0 < size;
     }
 }

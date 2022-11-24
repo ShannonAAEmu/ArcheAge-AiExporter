@@ -1,9 +1,7 @@
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import reader.BaiReader;
-import reader.impl.FlightMissionReaderImpl;
-import reader.impl.NetMissionReaderImpl;
-import reader.impl.VertexMissionReaderImpl;
+import reader.impl.*;
 
 import java.io.File;
 import java.util.HashMap;
@@ -62,17 +60,29 @@ public class Main {
         for (Map.Entry<File, String> map : serverBaiHashMap.entrySet()) {
             if ("vertsmission0.bai".equals(map.getKey().getName())) {
                 baiReader = new VertexMissionReaderImpl(map.getKey(), Integer.parseInt(map.getValue()));
-                baiReader.read();
+                baiReader.readFile();
                 baiReader.close();
             }
             if ("netmission0.bai".equals(map.getKey().getName())) {
                 baiReader = new NetMissionReaderImpl(map.getKey(), Integer.parseInt(map.getValue()));
-                baiReader.read();
+                baiReader.readFile();
                 baiReader.close();
             }
             if ("fnavmission0.bai".equals(map.getKey().getName())) {
                 baiReader = new FlightMissionReaderImpl(map.getKey(), Integer.parseInt(map.getValue()));
-                baiReader.read();
+                baiReader.readFile();
+                baiReader.print();
+                baiReader.close();
+            }
+            if ("waypt3dsfcmission0.bai".equals(map.getKey().getName())) {
+                baiReader = new WaypointSurfaceNavigationReaderImpl(map.getKey(), Integer.parseInt(map.getValue()));
+                baiReader.readFile();
+                baiReader.print();
+                baiReader.close();
+            }
+            if ("roadnavmission0.bai".equals(map.getKey().getName())) {
+                baiReader = new RoadMissionImpl(map.getKey(), Integer.parseInt(map.getValue()));
+                baiReader.readFile();
                 baiReader.print();
                 baiReader.close();
             }

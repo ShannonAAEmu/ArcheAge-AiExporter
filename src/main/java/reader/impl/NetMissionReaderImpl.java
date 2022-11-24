@@ -6,7 +6,7 @@ import descriptors.impl.links.NodeLinkDescriptor;
 import entities.Bbox;
 import entities.Vector;
 import reader.BaiReader;
-import reader.ReaderUtil;
+import utils.ReaderUtil;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -32,17 +32,22 @@ public class NetMissionReaderImpl implements BaiReader {
     }
 
     @Override
-    public void read() {
+    public void initReaderUtil() throws FileNotFoundException {
+        readerUtil = new ReaderUtil(new RandomAccessFile(rawBaiFile, "r"));
+    }
+
+    @Override
+    public void readFile() {
         try {
             initReaderUtil();
-            int version = readFileVersion();
+            int version = readerUtil.readFileVersion();
             checkVersion(version);
             initTriangularBBox();
-            int descriptorsSize = readDescriptorsSize();
+            long descriptorsSize = readerUtil.readDescriptorSize();
             if (isValidDescriptor(descriptorsSize)) {
-                readNodeDescriptors(descriptorsSize);
+                readDescriptor(descriptorsSize);
             }
-            descriptorsSize = readDescriptorsSize();
+            descriptorsSize = readerUtil.readDescriptorSize();
             if (isValidDescriptor(descriptorsSize)) {
                 readLinkDescriptors(descriptorsSize);
             }
@@ -52,14 +57,37 @@ public class NetMissionReaderImpl implements BaiReader {
     }
 
     @Override
-    public int readFileVersion() throws IOException {
-        return readerUtil.readInt();
+    public void checkVersion(int version) {
+        if (BAI_TRI_FILE_VERSION != version) {
+            throw new RuntimeException("Wrong triangulation BAI file version - found " + version + " expected " + BAI_TRI_FILE_VERSION);
+        }
     }
 
     @Override
-    public void checkVersion(int version) {
-        if (BAI_TRI_FILE_VERSION != version) {
-            throw new RuntimeException("Wrong vertex list BAI file version - found " + version + " expected " + BAI_TRI_FILE_VERSION);
+    public boolean isValidDescriptor(long size) {
+        return 0 < size;
+    }
+
+    @Override
+    public void readDescriptor(long size) throws IOException {
+        NodeDescriptor nodeDescriptor;
+        NodeDescriptor.EWaypointNodeType[] eWaypointNodeTypes = NodeDescriptor.EWaypointNodeType.values();
+        for (int i = 0; i < size; i++) {
+            nodeDescriptor = new NodeDescriptor(triangularBBox);
+            nodeDescriptor.setZoneId(zoneId);
+            nodeDescriptor.setId(readerUtil.readInt());
+            nodeDescriptor.setDir(readCoords("dir"));
+            nodeDescriptor.setUp(readCoords("up"));
+            nodeDescriptor.setPos(readCoords("pos"));
+            nodeDescriptor.setIndex(readerUtil.readInt());
+            nodeDescriptor.setObstacle1(readerUtil.readInt());
+            nodeDescriptor.setObstacle2(readerUtil.readInt());
+            nodeDescriptor.setObstacle3(readerUtil.readInt());
+            nodeDescriptor.setType(eWaypointNodeTypes[readerUtil.readByte()]);
+            nodeDescriptor.setForbidden(readerUtil.readByte());
+            nodeDescriptor.setUnk1(readerUtil.readByte());
+            nodeDescriptor.setUnk2(readerUtil.readByte());
+            nodeDescriptorList.add(nodeDescriptor);
         }
     }
 
@@ -83,10 +111,6 @@ public class NetMissionReaderImpl implements BaiReader {
 
     }
 
-    private void initReaderUtil() throws FileNotFoundException {
-        readerUtil = new ReaderUtil(new RandomAccessFile(rawBaiFile, "r"));
-    }
-
     private void initTriangularBBox() throws IOException {
         triangularBBox = new Bbox();
         triangularBBox.setTriangularBBoxMin(readTriangularBBox("triangularBBoxMin"));
@@ -101,34 +125,7 @@ public class NetMissionReaderImpl implements BaiReader {
         return triangularBBox;
     }
 
-    private int readDescriptorsSize() throws IOException {
-        return readerUtil.readInt();
-    }
-
-    private void readNodeDescriptors(int size) throws IOException {
-        NodeDescriptor nodeDescriptor;
-        NodeDescriptor.EWaypointNodeType[] eWaypointNodeTypes = NodeDescriptor.EWaypointNodeType.values();
-        for (int i = 0; i < size; i++) {
-            nodeDescriptor = new NodeDescriptor(triangularBBox);
-            nodeDescriptor.setZoneId(zoneId);
-            nodeDescriptor.setId(readerUtil.readInt());
-            nodeDescriptor.setDir(readCoords("dir"));
-            nodeDescriptor.setUp(readCoords("up"));
-            nodeDescriptor.setPos(readCoords("pos"));
-            nodeDescriptor.setIndex(readerUtil.readInt());
-            nodeDescriptor.setObstacle1(readerUtil.readInt());
-            nodeDescriptor.setObstacle2(readerUtil.readInt());
-            nodeDescriptor.setObstacle3(readerUtil.readInt());
-            nodeDescriptor.setType(eWaypointNodeTypes[readerUtil.readByte()]);
-            nodeDescriptor.setForbidden(readerUtil.readByte());
-            nodeDescriptor.setUnk1(readerUtil.readByte());
-            nodeDescriptor.setUnk2(readerUtil.readByte());
-            nodeDescriptorList.add(nodeDescriptor);
-        }
-    }
-
-    @Override
-    public void readLinkDescriptors(int size) throws IOException {
+    private void readLinkDescriptors(long size) throws IOException {
         NodeLinkDescriptor nodeLinkDescriptor;
         for (int i = 0; i < size; i++) {
             nodeLinkDescriptor = new NodeLinkDescriptor();
@@ -154,9 +151,5 @@ public class NetMissionReaderImpl implements BaiReader {
         coordsVector.setY(readerUtil.readDouble());
         coordsVector.setZ(readerUtil.readDouble());
         return coordsVector;
-    }
-
-    private boolean isValidDescriptor(int size) {
-        return 0 < size;
     }
 }
