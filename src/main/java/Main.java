@@ -58,14 +58,10 @@ public class Main {
     private static void loadServerGeoData() {
         BaiReader baiReader;
         for (Map.Entry<File, String> map : serverBaiHashMap.entrySet()) {
-            if ("vertsmission0.bai".equals(map.getKey().getName())) {
-                baiReader = new VertexMissionReaderImpl(map.getKey(), Integer.parseInt(map.getValue()));
+            if ("areasmission0.bai".equals(map.getKey().getName())) {
+                baiReader = new AreasMissionReaderImpl(map.getKey(), Integer.parseInt(map.getValue()));
                 baiReader.readFile();
-                baiReader.close();
-            }
-            if ("netmission0.bai".equals(map.getKey().getName())) {
-                baiReader = new NetMissionReaderImpl(map.getKey(), Integer.parseInt(map.getValue()));
-                baiReader.readFile();
+                baiReader.print();
                 baiReader.close();
             }
             if ("fnavmission0.bai".equals(map.getKey().getName())) {
@@ -74,14 +70,27 @@ public class Main {
                 baiReader.print();
                 baiReader.close();
             }
-            if ("waypt3dsfcmission0.bai".equals(map.getKey().getName())) {
-                baiReader = new WaypointSurfaceNavigationReaderImpl(map.getKey(), Integer.parseInt(map.getValue()));
+            if ("netmission0.bai".equals(map.getKey().getName())) {
+                baiReader = new NetMissionReaderImpl(map.getKey(), Integer.parseInt(map.getValue()));
                 baiReader.readFile();
                 baiReader.print();
                 baiReader.close();
             }
             if ("roadnavmission0.bai".equals(map.getKey().getName())) {
                 baiReader = new RoadMissionImpl(map.getKey(), Integer.parseInt(map.getValue()));
+                baiReader.readFile();
+                baiReader.print();
+                baiReader.close();
+            }
+            // v3dmission0.bai
+            if ("vertsmission0.bai".equals(map.getKey().getName())) {
+                baiReader = new VertexMissionReaderImpl(map.getKey(), Integer.parseInt(map.getValue()));
+                baiReader.readFile();
+                baiReader.print();
+                baiReader.close();
+            }
+            if ("waypt3dsfcmission0.bai".equals(map.getKey().getName())) {
+                baiReader = new WaypointSurfaceNavigationReaderImpl(map.getKey(), Integer.parseInt(map.getValue()));
                 baiReader.readFile();
                 baiReader.print();
                 baiReader.close();

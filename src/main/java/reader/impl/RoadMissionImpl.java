@@ -1,5 +1,6 @@
 package reader.impl;
 
+import descriptors.Descriptor;
 import descriptors.impl.RoadDescriptor;
 import entities.RoadNode;
 import entities.Vector;
@@ -16,7 +17,7 @@ import java.util.List;
 public class RoadMissionImpl implements BaiReader {
     private static final int BAI_ROADS_FILE_VERSION = 2;
     private final File rawBaiFile;
-    private final List<RoadDescriptor> roadDescriptorList;
+    private final List<Descriptor> roadDescriptorList;
     private final int zoneId;
     private ReaderUtil readerUtil;
 
