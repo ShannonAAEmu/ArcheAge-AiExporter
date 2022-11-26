@@ -11,13 +11,10 @@ public interface BaiReader {
 
     void checkVersion(int version);
 
-    boolean isValidDescriptor(long count);
-
-    void readDescriptor(long size) throws IOException;
+    void readFromFile() throws IOException;
 
     void close();
 
     void print();
 
-    void save();
 }

@@ -1,11 +1,20 @@
-package entities;
+package entities.neww;
+
+import com.google.gson.annotations.Expose;
 
 import java.util.Objects;
 
 public class Vector {
+    @Expose()
     private String name;
+
+    @Expose()
     private double x;
+
+    @Expose()
     private double y;
+
+    @Expose()
     private double z;
 
     public Vector(String name) {

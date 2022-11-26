@@ -21,6 +21,14 @@ public class ReaderUtil {
         this.randomAccessFile = randomAccessFile;
     }
 
+    public long getPos() {
+        try {
+            return randomAccessFile.getFilePointer();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private byte[] reverseBytesArray(byte[] bytes) {
         byte[] reverseArray = new byte[bytes.length];
         int j = bytes.length;
@@ -81,6 +89,12 @@ public class ReaderUtil {
         return convertHexToInt(bytes);
     }
 
+    public long readLong() throws IOException {
+        byte[] bytes = new byte[8];
+        randomAccessFile.read(bytes);
+        return convertHexToLong(bytes);
+    }
+
     public double readDouble() throws IOException {
         byte[] bytes = new byte[4];
         randomAccessFile.read(bytes);
@@ -97,7 +111,7 @@ public class ReaderUtil {
         return readInt();
     }
 
-    public long readDescriptorSize() throws IOException {
+    public long readUnsigned() throws IOException {
         return readInt();
     }
 
