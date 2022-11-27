@@ -1,44 +1,53 @@
-package models;
+package entities;
 
 import com.google.gson.annotations.Expose;
 
 import java.util.Objects;
 
-public class PointPos {
+public class Vector {
 
     @Expose()
-    private final double x;
+    private double x;
 
     @Expose()
-    private final double y;
+    private double y;
 
     @Expose()
-    private final double z;
+    private double z;
 
-    public PointPos(double x, double y, double z) {
-        this.x = x;
-        this.y = y;
-        this.z = z;
+    public Vector() {
     }
 
     public double getX() {
         return x;
     }
 
+    public void setX(double x) {
+        this.x = x;
+    }
+
     public double getY() {
         return y;
+    }
+
+    public void setY(double y) {
+        this.y = y;
     }
 
     public double getZ() {
         return z;
     }
 
+    public void setZ(double z) {
+        this.z = z;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        PointPos pointPos = (PointPos) o;
-        return Double.compare(pointPos.x, x) == 0 && Double.compare(pointPos.y, y) == 0 && Double.compare(pointPos.z, z) == 0;
+        Vector vector = (Vector) o;
+        return Double.compare(vector.x, x) == 0 && Double.compare(vector.y, y) == 0 && Double.compare(vector.z, z) == 0;
     }
 
     @Override
@@ -48,7 +57,7 @@ public class PointPos {
 
     @Override
     public String toString() {
-        return "PointPos{" +
+        return "Vector{" +
                 "x=" + x +
                 ", y=" + y +
                 ", z=" + z +
