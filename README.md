@@ -29,11 +29,11 @@
    </h2>
    <h4>
     <ol>
-     <li>Drop release to "game\worlds\{world_name}\" folder</li>
+     <li>Drop release to "game\worlds" folder</li>
      <li>Launch</li>
-     <li>Go to "game\worlds\{world_name}\zone\{id}\Export AI" folder</li>
-     <li>Get result in files</li>
+     <li>Result in "game\worlds\export_server" folder</li>
     </ol>
+	   Required Java 9+
    </h4>
  </div>
 </div>
