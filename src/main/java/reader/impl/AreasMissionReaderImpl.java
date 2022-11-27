@@ -1,12 +1,11 @@
 package reader.impl;
 
-import area.Area;
-import area.impl.AIShape;
-import area.impl.ExtraLinkCostShape;
-import area.impl.PolygonArea;
-import area.impl.SpecialArea;
-import entities.neww.AABB;
-import entities.neww.Vector;
+import entities.Vector;
+import entities.export.AreasMissionExport;
+import missions.Mission;
+import missions.impl.AIShape;
+import missions.impl.PolygonArea;
+import missions.impl.SpecialArea;
 import reader.BaiReader;
 import utils.ReaderUtil;
 
@@ -20,18 +19,20 @@ import java.util.List;
 public class AreasMissionReaderImpl implements BaiReader {
 
     private static final int BAI_AREAS_FILE_VERSION = 21;
+    private final AreasMissionExport areasMissionExport;
     private final File rawBaiFile;
     private final int zoneId;
     private final List<AIShape> forbiddenAreasList;
     private final List<SpecialArea> navigationModifiersList;
     private final List<AIShape> designerForbiddenAreasList;
     private final List<AIShape> forbiddenBoundariesList;
-    private final List<ExtraLinkCostShape> extraLinkCostsList;
+    private final List<AIShape> extraLinkCostsList;
     private final List<PolygonArea> designerPathsList;
     private ReaderUtil readerUtil;
     private List<Vector> points;
 
-    public AreasMissionReaderImpl(File rawBaiFile, int zoneId) {
+    public AreasMissionReaderImpl(AreasMissionExport areasMissionExport, File rawBaiFile, int zoneId) {
+        this.areasMissionExport = areasMissionExport;
         this.rawBaiFile = rawBaiFile;
         this.zoneId = zoneId;
         this.forbiddenAreasList = new ArrayList<>();
@@ -95,10 +96,9 @@ public class AreasMissionReaderImpl implements BaiReader {
             readForbiddenBoundaries(aiShape);
         }
         numAreas = readerUtil.readUnsigned();
-        ExtraLinkCostShape extraLinkCostShape;
         for (int i = 0; i < numAreas; i++) {
-            extraLinkCostShape = new ExtraLinkCostShape(zoneId);
-            readExtraLinkCostArea(extraLinkCostShape);
+            aiShape = new AIShape(zoneId);
+            readExtraLinkCostArea(aiShape);
         }
         readerUtil.readLong();                                          // unk data
         numAreas = readerUtil.readUnsigned();
@@ -119,13 +119,13 @@ public class AreasMissionReaderImpl implements BaiReader {
     }
 
     @Override
-    public void print() {
-        System.out.println(forbiddenAreasList);
-        System.out.println(navigationModifiersList);
-        System.out.println(designerForbiddenAreasList);
-        System.out.println(forbiddenBoundariesList);
-        System.out.println(extraLinkCostsList);
-        System.out.println(designerPathsList);
+    public void prepareExport() {
+        areasMissionExport.getForbiddenAreasList().add(forbiddenAreasList);
+        areasMissionExport.getNavigationModifiersList().add(navigationModifiersList);
+        areasMissionExport.getDesignerForbiddenAreasList().add(designerForbiddenAreasList);
+        areasMissionExport.getForbiddenBoundariesList().add(forbiddenBoundariesList);
+        areasMissionExport.getExtraLinkCostsList().add(extraLinkCostsList);
+        areasMissionExport.getDesignerPathsList().add(designerPathsList);
     }
 
     private void readForbiddenArea(AIShape aiShape, ForbiddenAreasType type) throws IOException {
@@ -133,13 +133,14 @@ public class AreasMissionReaderImpl implements BaiReader {
         long pointsSize = readerUtil.readUnsigned();
         points = new ArrayList<>();
         for (int i = 0; i < pointsSize; i++) {
-            points.add(readCoords(aiShape.getName()));
+            points.add(readCoords());
         }
         aiShape.setPoints(points);
         switch (type) {
             case FORBIDDEN_AREA -> forbiddenAreasList.add(aiShape);
             case DESIGNER_FORBIDDEN_AREA -> designerForbiddenAreasList.add(aiShape);
             case FORBIDDEN_BOUNDARIES -> forbiddenBoundariesList.add(aiShape);
+            case EXTRA_LINK -> extraLinkCostsList.add(aiShape);
         }
     }
 
@@ -159,7 +160,7 @@ public class AreasMissionReaderImpl implements BaiReader {
         if (BAI_AREAS_FILE_VERSION >= 18) {
             specialArea.setAiLightLevel(SpecialArea.AILightLevel.values()[readerUtil.readByte()]);
         }
-        readPoints(specialArea);
+        readPoints();
         specialArea.setPoints(points);
         navigationModifiersList.add(specialArea);
     }
@@ -172,16 +173,9 @@ public class AreasMissionReaderImpl implements BaiReader {
         readForbiddenArea(aiShape, ForbiddenAreasType.FORBIDDEN_BOUNDARIES);
     }
 
-    private void readExtraLinkCostArea(ExtraLinkCostShape extraLinkCostShape) throws IOException {
-        readAreaName(extraLinkCostShape);
-        extraLinkCostShape.setCostFactor(readerUtil.readDouble());
-        AABB aabb = new AABB();
-        aabb.setMin(readCoords(extraLinkCostShape.getName()));
-        aabb.setMax(readCoords(extraLinkCostShape.getName()));
-        extraLinkCostShape.setAabb(aabb);
-        readPoints(extraLinkCostShape);
-        extraLinkCostShape.setPoints(points);
-        extraLinkCostsList.add(extraLinkCostShape);
+    private void readExtraLinkCostArea(AIShape aiShape) throws IOException {
+        readForbiddenArea(aiShape, ForbiddenAreasType.EXTRA_LINK);
+        extraLinkCostsList.add(aiShape);
     }
 
     private void readDesignerPaths(PolygonArea polygonArea) throws IOException {
@@ -189,7 +183,7 @@ public class AreasMissionReaderImpl implements BaiReader {
         long pointsSize = readerUtil.readUnsigned();
         points = new ArrayList<>();
         for (int i = 0; i < pointsSize; i++) {
-            points.add(readCoords(polygonArea.getName()));
+            points.add(readCoords());
         }
         polygonArea.setPoints(points);
         polygonArea.setNavigationType(PolygonArea.NavigationType.values()[1 << readerUtil.readInt()]);
@@ -199,29 +193,53 @@ public class AreasMissionReaderImpl implements BaiReader {
         designerPathsList.add(polygonArea);
     }
 
-    private void readAreaName(Area area) throws IOException {
-        area.setName(readerUtil.readString(readerUtil.readInt()));
+    private void readAreaName(Mission mission) throws IOException {
+        mission.setName(readerUtil.readString(readerUtil.readInt()));
     }
 
-    private Vector readCoords(String name) throws IOException {
-        Vector coordsVector = new Vector(name);
+    private Vector readCoords() throws IOException {
+        Vector coordsVector = new Vector();
         coordsVector.setX(readerUtil.readDouble());
         coordsVector.setY(readerUtil.readDouble());
         coordsVector.setZ(readerUtil.readDouble());
         return coordsVector;
     }
 
-    private void readPoints(Area area) throws IOException {
+    private void readPoints() throws IOException {
         points = new ArrayList<>();
         Vector vector;
         long pointsSize = readerUtil.readUnsigned();
         for (int i = 0; i < pointsSize; i++) {
-            vector = readCoords(area.getName());
+            vector = readCoords();
             points.add(vector);
         }
     }
 
+    public List<AIShape> getForbiddenAreasList() {
+        return forbiddenAreasList;
+    }
+
+    public List<SpecialArea> getNavigationModifiersList() {
+        return navigationModifiersList;
+    }
+
+    public List<AIShape> getDesignerForbiddenAreasList() {
+        return designerForbiddenAreasList;
+    }
+
+    public List<AIShape> getForbiddenBoundariesList() {
+        return forbiddenBoundariesList;
+    }
+
+    public List<AIShape> getExtraLinkCostsList() {
+        return extraLinkCostsList;
+    }
+
+    public List<PolygonArea> getDesignerPathsList() {
+        return designerPathsList;
+    }
+
     private enum ForbiddenAreasType {
-        FORBIDDEN_AREA, DESIGNER_FORBIDDEN_AREA, FORBIDDEN_BOUNDARIES
+        FORBIDDEN_AREA, DESIGNER_FORBIDDEN_AREA, FORBIDDEN_BOUNDARIES, EXTRA_LINK
     }
 }

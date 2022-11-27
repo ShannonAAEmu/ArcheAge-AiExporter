@@ -12,17 +12,10 @@ import java.nio.file.Files;
 
 public class WriterUtil {
 
-    private final File jsonFile;
-    private final Object object;
-
-    public WriterUtil(File jsonFile, Object object) {
-        this.jsonFile = jsonFile;
-        this.object = object;
-    }
-
-    public void writeDataToJson() throws IOException {
-        Files.deleteIfExists(jsonFile.toPath());
-        RandomAccessFile randomAccessFile = new RandomAccessFile(jsonFile, "rw");
+    public static void writeDataToJson(File path, String name, Object object) throws IOException {
+        File exportedFile = new File(path.getAbsolutePath() + "\\" + name);
+        Files.createFile(exportedFile.toPath());
+        RandomAccessFile randomAccessFile = new RandomAccessFile(exportedFile, "rw");
         Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().excludeFieldsWithoutExposeAnnotation().create();
         String json;
         if (!object.getClass().equals(JSONArray.class)) {

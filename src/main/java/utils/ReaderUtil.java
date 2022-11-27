@@ -39,6 +39,16 @@ public class ReaderUtil {
         return reverseArray;
     }
 
+    private short convertHexToShort(byte[] bytes) {
+        formatStringBuilder(bytes);
+        String idxStr = SB.toString();
+        clearSB();
+        if ("ffffffff".equals(idxStr)) {
+            return 0;
+        }
+        return Short.parseShort(idxStr, 16);
+    }
+
     private int convertHexToInt(byte[] bytes) {
         formatStringBuilder(bytes);
         String idxStr = SB.toString();
@@ -78,9 +88,10 @@ public class ReaderUtil {
         return bytes[0];
     }
 
-    public void readShortSeparator() throws IOException {
+    public short readShot() throws IOException {
         byte[] bytes = new byte[2];
         randomAccessFile.read(bytes);
+        return convertHexToShort(bytes);
     }
 
     public int readInt() throws IOException {

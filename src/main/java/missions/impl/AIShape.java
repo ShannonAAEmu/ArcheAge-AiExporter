@@ -1,13 +1,13 @@
-package area.impl;
+package missions.impl;
 
-import area.Area;
 import com.google.gson.annotations.Expose;
-import entities.neww.Vector;
+import entities.Vector;
+import missions.Mission;
 
 import java.util.List;
 import java.util.Objects;
 
-public class AIShape implements Area {
+public class AIShape implements Mission {
     @Expose()
     private final long zoneId;
 

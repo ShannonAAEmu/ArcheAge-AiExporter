@@ -1,6 +1,6 @@
-package area;
+package missions;
 
-public interface Area {
+public interface Mission {
     String getName();
 
     void setName(String name);

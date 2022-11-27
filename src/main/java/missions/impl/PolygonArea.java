@@ -1,13 +1,13 @@
-package area.impl;
+package missions.impl;
 
-import area.Area;
+import missions.Mission;
 import com.google.gson.annotations.Expose;
-import entities.neww.Vector;
+import entities.Vector;
 
 import java.util.List;
 import java.util.Objects;
 
-public class PolygonArea implements Area {
+public class PolygonArea implements Mission {
     @Expose()
     private final int zoneId;
 

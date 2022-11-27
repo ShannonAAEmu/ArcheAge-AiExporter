@@ -1,18 +1,18 @@
-package entities.neww;
+package entities;
 
 import com.google.gson.annotations.Expose;
 
 import java.util.Objects;
 
-public class AABB {
+public class BBox {
 
-    @Expose()
+    @Expose
     private Vector min;
 
-    @Expose()
+    @Expose
     private Vector max;
 
-    public AABB() {
+    public BBox() {
     }
 
     public Vector getMin() {
@@ -35,8 +35,8 @@ public class AABB {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        AABB aabb = (AABB) o;
-        return Objects.equals(min, aabb.min) && Objects.equals(max, aabb.max);
+        BBox bBox = (BBox) o;
+        return Objects.equals(min, bBox.min) && Objects.equals(max, bBox.max);
     }
 
     @Override
@@ -46,7 +46,7 @@ public class AABB {
 
     @Override
     public String toString() {
-        return "AABB{" +
+        return "BBox{" +
                 "min=" + min +
                 ", max=" + max +
                 '}';

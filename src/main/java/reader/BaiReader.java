@@ -15,6 +15,6 @@ public interface BaiReader {
 
     void close();
 
-    void print();
+    void prepareExport();
 
 }

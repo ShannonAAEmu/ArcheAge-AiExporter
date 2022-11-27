@@ -1,12 +1,10 @@
-package entities.neww;
+package entities;
 
 import com.google.gson.annotations.Expose;
 
 import java.util.Objects;
 
 public class Vector {
-    @Expose()
-    private String name;
 
     @Expose()
     private double x;
@@ -17,16 +15,7 @@ public class Vector {
     @Expose()
     private double z;
 
-    public Vector(String name) {
-        this.name = name;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+    public Vector() {
     }
 
     public double getX() {
@@ -58,19 +47,18 @@ public class Vector {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Vector vector = (Vector) o;
-        return Double.compare(vector.x, x) == 0 && Double.compare(vector.y, y) == 0 && Double.compare(vector.z, z) == 0 && Objects.equals(name, vector.name);
+        return Double.compare(vector.x, x) == 0 && Double.compare(vector.y, y) == 0 && Double.compare(vector.z, z) == 0;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, x, y, z);
+        return Objects.hash(x, y, z);
     }
 
     @Override
     public String toString() {
         return "Vector{" +
-                "name='" + name + '\'' +
-                ", x=" + x +
+                "x=" + x +
                 ", y=" + y +
                 ", z=" + z +
                 '}';
